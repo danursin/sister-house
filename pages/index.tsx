@@ -1,6 +1,7 @@
 import { APIResponse, Address, SearchParameters } from "../types";
 import { SyntheticEvent, useState } from "react";
 
+import AddressMap from "../components/AddressMap";
 import Layout from "../components/Layout";
 import type { NextPage } from "next";
 
@@ -9,6 +10,8 @@ const Home: NextPage = () => {
     const [params, setParams] = useState<SearchParameters>({
         Add_Number: ""
     });
+    const [zoom, setZoom] = useState<number>(3);
+    const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: -45, lng: 15 });
 
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
@@ -33,9 +36,13 @@ const Home: NextPage = () => {
                         required
                     />
                 </div>
+            </form>
 
-                {!addresses && <p>Enter parameters to see addresses</p>}
-                {!!addresses && (
+            <AddressMap addresses={addresses ?? []} center={center} zoom={zoom} />
+
+            {!addresses && <p>Enter parameters to see addresses</p>}
+            {!!addresses && (
+                <div style={{ display: "flex", height: "100%" }}>
                     <ul>
                         {addresses.map(({ OID_, Add_Number, StreetName }) => (
                             <li key={OID_}>
@@ -45,8 +52,8 @@ const Home: NextPage = () => {
                             </li>
                         ))}
                     </ul>
-                )}
-            </form>
+                </div>
+            )}
         </Layout>
     );
 };

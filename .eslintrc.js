@@ -4,6 +4,9 @@ module.exports = {
     rules: {
         "sort-imports": "error"
     },
+    globals: {
+        google: "readonly"
+    },
     settings: {
         react: {
             version: "detect"
