@@ -1,9 +1,8 @@
-import { APIResponse, Address } from "../types";
+import { APIResponse, Address, SearchParameters } from "../types";
 import { SyntheticEvent, useState } from "react";
 
 import Layout from "../components/Layout";
 import type { NextPage } from "next";
-import { SearchParameters } from "./api/search";
 
 const Home: NextPage = () => {
     const [addresses, setAddresses] = useState<Address[]>();

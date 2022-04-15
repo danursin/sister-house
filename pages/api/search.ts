@@ -1,11 +1,7 @@
-import { APIResponse, Address } from "../../types";
+import { APIResponse, Address, SearchParameters } from "../../types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { getKnex } from "../../db";
-
-type SearchParameters = {
-    Add_Number: string;
-};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<APIResponse<Address[]>>) {
     const { Add_Number } = req.query as SearchParameters;

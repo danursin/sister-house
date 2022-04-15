@@ -16,3 +16,7 @@ export type APIResponse<T> =
           data: T;
       }
     | { error: string };
+
+export type SearchParameters = {
+    Add_Number: string;
+};
