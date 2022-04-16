@@ -19,4 +19,5 @@ export type APIResponse<T> =
 
 export type SearchParameters = {
     Add_Number: string;
+    Bounds?: string;
 };

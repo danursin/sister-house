@@ -1,20 +1,23 @@
 import { APIResponse, Address, SearchParameters } from "../types";
 import { SyntheticEvent, useState } from "react";
 
-import AddressMap from "../components/AddressMap";
+import GoogleMap from "../components/GoogleMapPackage/GoogleMap";
 import Layout from "../components/Layout";
+import Marker from "../components/GoogleMapPackage/Marker";
 import type { NextPage } from "next";
+import { useGoogleMap } from "../components/GoogleMapPackage/useGoogleMap";
 
 const Home: NextPage = () => {
+    const { bounds } = useGoogleMap();
     const [addresses, setAddresses] = useState<Address[]>();
-    const [params, setParams] = useState<SearchParameters>({
-        Add_Number: ""
-    });
-    const [zoom] = useState<number>(7);
-    const [center] = useState<google.maps.LatLngLiteral>({ lat: 44.9212, lng: -93.4687 }); //44.9212° N, 93.4687° W
+    const [Add_Number, setAdd_Number] = useState<string>("");
 
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
+        const params: SearchParameters = { Add_Number };
+        if (bounds) {
+            params.Bounds = bounds.toUrlValue();
+        }
         const res = await fetch("/api/search?" + new URLSearchParams(params));
         const json: APIResponse<Address[]> = await res.json();
 
@@ -29,16 +32,16 @@ const Home: NextPage = () => {
             <form onSubmit={onSubmit}>
                 <div className="field">
                     <label>House Number</label>
-                    <input
-                        type="text"
-                        value={params.Add_Number}
-                        onChange={(e) => setParams({ ...params, Add_Number: e.target.value })}
-                        required
-                    />
+                    <input type="text" value={Add_Number} onChange={(e) => setAdd_Number(e.target.value)} required />
+                    <button type="submit">Search this area</button>
                 </div>
             </form>
 
-            <AddressMap addresses={addresses ?? []} center={center} zoom={zoom} />
+            <GoogleMap apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string} style={{ flexGrow: "1", height: "60vh" }}>
+                {addresses?.map((a) => (
+                    <Marker key={a.OID_} position={{ lat: a.Latitude, lng: a.Longitude }} />
+                ))}
+            </GoogleMap>
 
             {!addresses && <p>Enter parameters to see addresses</p>}
             {!!addresses && (
