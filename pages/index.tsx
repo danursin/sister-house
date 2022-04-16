@@ -10,8 +10,8 @@ const Home: NextPage = () => {
     const [params, setParams] = useState<SearchParameters>({
         Add_Number: ""
     });
-    const [zoom] = useState<number>(3);
-    const [center] = useState<google.maps.LatLngLiteral>({ lat: -45, lng: 15 });
+    const [zoom] = useState<number>(7);
+    const [center] = useState<google.maps.LatLngLiteral>({ lat: 44.9212, lng: -93.4687 }); //44.9212° N, 93.4687° W
 
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
@@ -27,7 +27,7 @@ const Home: NextPage = () => {
     return (
         <Layout>
             <form onSubmit={onSubmit}>
-                <div>
+                <div className="field">
                     <label>House Number</label>
                     <input
                         type="text"
