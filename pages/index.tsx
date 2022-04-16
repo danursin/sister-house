@@ -10,8 +10,8 @@ const Home: NextPage = () => {
     const [params, setParams] = useState<SearchParameters>({
         Add_Number: ""
     });
-    const [zoom, setZoom] = useState<number>(3);
-    const [center, setCenter] = useState<google.maps.LatLngLiteral>({ lat: -45, lng: 15 });
+    const [zoom] = useState<number>(3);
+    const [center] = useState<google.maps.LatLngLiteral>({ lat: -45, lng: 15 });
 
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
