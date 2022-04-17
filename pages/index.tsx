@@ -5,6 +5,7 @@ import GoogleMap from "../components/GoogleMapPackage/GoogleMap";
 import Layout from "../components/Layout";
 import Marker from "../components/GoogleMapPackage/Marker";
 import type { NextPage } from "next";
+import Statistics from "../components/Statistics";
 import { useGoogleMap } from "../components/GoogleMapPackage/useGoogleMap";
 
 const Home: NextPage = () => {
@@ -39,24 +40,15 @@ const Home: NextPage = () => {
 
             <GoogleMap apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string} style={{ flexGrow: "1", height: "60vh" }}>
                 {addresses?.map((a) => (
-                    <Marker key={a.OID_} position={{ lat: a.Latitude, lng: a.Longitude }} />
+                    <Marker
+                        key={a.OID_}
+                        position={{ lat: a.Latitude, lng: a.Longitude }}
+                        title={`${a.Add_Number} ${a.StreetName} ${a.StN_PosTyp}`}
+                    />
                 ))}
             </GoogleMap>
 
-            {!addresses && <p>Enter parameters to see addresses</p>}
-            {!!addresses && (
-                <div style={{ display: "flex", height: "100%" }}>
-                    <ul>
-                        {addresses.map(({ OID_, Add_Number, StreetName }) => (
-                            <li key={OID_}>
-                                <address>
-                                    {Add_Number} {StreetName}
-                                </address>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
+            {!!addresses && <Statistics addresses={addresses} />}
         </Layout>
     );
 };
