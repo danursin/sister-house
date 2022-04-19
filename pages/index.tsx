@@ -69,7 +69,6 @@ const Home: NextPage = () => {
         <Layout>
             <form onSubmit={onSubmit}>
                 <div className="field">
-                    <label>House Number</label>
                     <input
                         type="tel"
                         pattern="^\d+$"

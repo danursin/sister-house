@@ -17,13 +17,19 @@ main {
 form {
     .field {
         margin: 0.75rem 0;
-        label {
-            display: inline-block;
-            padding-right: 0.5rem;
-            
-        }
         input {
             padding: 0.25rem 0.75rem;
+            margin-right: 0.75rem;
         }
     }
+}
+
+code {
+    display: block;
+    padding: 0.75rem;
+    margin: 0.75rem 0;
+    font-family: 'consolas';
+    background-color: #333;
+    color: #eee;
+    border-radius: 3px;
 }
