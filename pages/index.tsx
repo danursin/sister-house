@@ -97,6 +97,7 @@ const Home: NextPage = () => {
                     <input
                         type="tel"
                         pattern="^\d+$"
+                        placeholder="Enter House Number"
                         title="House number must consist of only digits"
                         value={Add_Number}
                         onChange={(e) => setAdd_Number(e.target.value)}
@@ -117,7 +118,9 @@ const Home: NextPage = () => {
                             lat: a.Latitude,
                             lng: a.Longitude
                         }).toUrlValue()})`}
-                        clickable
+                        onClick={() => {
+                            setAddresses(addresses.filter((thisA) => thisA.OID_ !== a.OID_));
+                        }}
                     />
                 ))}
                 {!!polylinePath && <Polyline path={polylinePath} strokeColor="purple" strokeWeight={5} />}
