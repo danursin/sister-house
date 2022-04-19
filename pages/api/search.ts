@@ -16,18 +16,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         query.andWhereBetween("Latitude", [+lat_lo, +lat_hi]).andWhereBetween("Longitude", [+lng_lo, +lng_hi]);
     }
 
-    const data = await query.select([
-        "OID_",
-        "State",
-        "County",
-        "Zip_Code",
-        "Add_Number",
-        "StreetName",
-        "StN_PosTyp",
-        "StN_PosDir",
-        "Longitude",
-        "Latitude"
-    ]);
+    const data = await query.select(["OID_", "Add_Number", "StreetName", "StN_PosTyp", "StN_PosDir", "Longitude", "Latitude"]);
 
     res.status(200).json({ data });
 }

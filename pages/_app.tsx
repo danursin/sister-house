@@ -5,7 +5,7 @@ import { GoogleMapContextProvider } from "../components/GoogleMapPackage/useGoog
 
 function MyApp({ Component, pageProps }: AppProps) {
     return (
-        <GoogleMapContextProvider defaultCenter={{ lat: 44.9212, lng: -93.4687 }} defaultZoom={7}>
+        <GoogleMapContextProvider defaultCenter={{ lat: 44.9212, lng: -93.4687 }} defaultZoom={10}>
             <Component {...pageProps} />
         </GoogleMapContextProvider>
     );

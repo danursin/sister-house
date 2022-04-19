@@ -9,15 +9,14 @@ interface StatisticsProps {
 const Statistics: React.FC<StatisticsProps> = ({ addresses }) => {
     const x = addresses.map((a) => a.Latitude);
     const y = addresses.map((a) => a.Longitude);
-    const [a, b, rSquared] = calculateRegression(x, y);
+    const [a, b] = calculateRegression(x, y);
 
     return (
         <p>
-            Regression line is{" "}
+            Regression line for {addresses.length} points is
             <code>
                 Y = {a.toFixed(2)} + {b.toFixed(2)}X
             </code>
-            With R^2 statistic {rSquared.toFixed(3)}
         </p>
     );
 };

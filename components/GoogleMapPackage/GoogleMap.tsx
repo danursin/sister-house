@@ -15,7 +15,7 @@ const Map: React.FC<MapProps> = ({ style, children }) => {
 
     useEffect(() => {
         if (ref.current && !map) {
-            setMap(new window.google.maps.Map(ref.current, {}));
+            setMap(new window.google.maps.Map(ref.current, { streetViewControl: false }));
         }
     }, [ref, map]);
 
