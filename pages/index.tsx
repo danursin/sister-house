@@ -39,9 +39,13 @@ const Home: NextPage = () => {
             }
         }
 
+        function getYValue(x: number) {
+            return a + b * x;
+        }
+
         setPolylinePath([
-            { lat: minLatitude, lng: a + b * minLatitude },
-            { lat: maxLatitude, lng: a + b * maxLatitude }
+            { lat: minLatitude, lng: getYValue(minLatitude) },
+            { lat: maxLatitude, lng: getYValue(maxLatitude) }
         ]);
     }, [addresses]);
 
