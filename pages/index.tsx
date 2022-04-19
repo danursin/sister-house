@@ -27,26 +27,51 @@ const Home: NextPage = () => {
             addresses.map((a) => a.Longitude)
         );
 
-        let minLatitude = Infinity,
-            maxLatitude = -Infinity;
-
-        for (const a of addresses) {
-            if (a.Latitude < minLatitude) {
-                minLatitude = a.Latitude;
-            }
-            if (a.Latitude > maxLatitude) {
-                maxLatitude = a.Latitude;
-            }
-        }
-
         function getYValue(x: number) {
             return a + b * x;
         }
 
-        setPolylinePath([
-            { lat: minLatitude, lng: getYValue(minLatitude) },
-            { lat: maxLatitude, lng: getYValue(maxLatitude) }
-        ]);
+        function getXValue(y: number) {
+            return (y - a) / b;
+        }
+
+        if (Math.abs(b) < 1) {
+            // this line is mostly vertical
+            let minLatitude = Infinity,
+                maxLatitude = -Infinity;
+
+            for (const a of addresses) {
+                if (a.Latitude < minLatitude) {
+                    minLatitude = a.Latitude;
+                }
+                if (a.Latitude > maxLatitude) {
+                    maxLatitude = a.Latitude;
+                }
+            }
+
+            setPolylinePath([
+                { lat: minLatitude, lng: getYValue(minLatitude) },
+                { lat: maxLatitude, lng: getYValue(maxLatitude) }
+            ]);
+        } else {
+            // this line is mostly horizontal
+            let minLongitude = Infinity,
+                maxLongitude = -Infinity;
+
+            for (const a of addresses) {
+                if (a.Longitude < minLongitude) {
+                    minLongitude = a.Longitude;
+                }
+                if (a.Longitude > maxLongitude) {
+                    maxLongitude = a.Longitude;
+                }
+            }
+
+            setPolylinePath([
+                { lng: minLongitude, lat: getXValue(minLongitude) },
+                { lng: maxLongitude, lat: getXValue(maxLongitude) }
+            ]);
+        }
     }, [addresses]);
 
     const onSubmit = async (e: SyntheticEvent) => {
@@ -88,7 +113,10 @@ const Home: NextPage = () => {
                     <Marker
                         key={a.OID_}
                         position={{ lat: a.Latitude, lng: a.Longitude }}
-                        title={`${a.Add_Number} ${a.StreetName} ${a.StN_PosTyp}`}
+                        title={`${a.Add_Number} ${a.StreetName} ${a.StN_PosTyp} (${new google.maps.LatLng({
+                            lat: a.Latitude,
+                            lng: a.Longitude
+                        }).toUrlValue()})`}
                         clickable
                     />
                 ))}
