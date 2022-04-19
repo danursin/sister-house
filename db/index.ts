@@ -12,7 +12,6 @@ export const getKnex = (): Knex => {
             options: {
                 enableArithAbort: true
             }
-        },
-        debug: true
+        }
     });
 };
