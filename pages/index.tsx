@@ -70,7 +70,14 @@ const Home: NextPage = () => {
             <form onSubmit={onSubmit}>
                 <div className="field">
                     <label>House Number</label>
-                    <input type="text" value={Add_Number} onChange={(e) => setAdd_Number(e.target.value)} required />
+                    <input
+                        type="tel"
+                        pattern="^\d+$"
+                        title="House number must consist of only digits"
+                        value={Add_Number}
+                        onChange={(e) => setAdd_Number(e.target.value)}
+                        required
+                    />
                     <button type="submit" disabled={loading}>
                         {loading ? "Loading..." : "Search this area"}
                     </button>
