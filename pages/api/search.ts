@@ -1,22 +1,46 @@
 import { APIResponse, Address, SearchParameters } from "../../types";
 import type { NextApiRequest, NextApiResponse } from "next";
+import dynamodb, { GEOHASH_PRECISION, TABLE_NAME } from "../../db/dynamodb";
 
-import { getKnex } from "../../db";
+import { BatchGetCommand } from "@aws-sdk/lib-dynamodb";
+import ngeohash from "ngeohash";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<APIResponse<Address[]>>) {
-    const { Add_Number, Bounds } = req.query as SearchParameters;
-    if (!Add_Number) {
-        res.status(400).json({ error: "Missing required parameter 'Add_Number'" });
+    const { address, bounds } = req.query as SearchParameters;
+    if (!address) {
+        res.status(400).json({ error: "Missing required parameter 'address'" });
     }
 
-    const query = getKnex().from<Address>("NationalAddressDatabase").where({ Add_Number });
+    const [lat_lo, lng_lo, lat_hi, lng_hi] = bounds.split(",");
 
-    if (Bounds) {
-        const [lat_lo, lng_lo, lat_hi, lng_hi] = Bounds.split(",");
-        query.andWhereBetween("Latitude", [+lat_lo, +lat_hi]).andWhereBetween("Longitude", [+lng_lo, +lng_hi]);
+    const minLat = +lat_lo;
+    const maxLat = +lat_hi;
+    const minLng = +lng_lo;
+    const maxLng = +lng_hi;
+
+    const hashes = ngeohash.bboxes(minLat, minLng, maxLat, maxLng, GEOHASH_PRECISION);
+
+    const addressNumber = parseInt(address);
+    const addresses: Address[] = [];
+    const batchSize = 100;
+
+    while (hashes.length) {
+        const batch = hashes.splice(0, batchSize);
+        const { Responses } = await dynamodb.send(
+            new BatchGetCommand({
+                RequestItems: {
+                    [TABLE_NAME]: {
+                        Keys: batch.map((geohash) => ({
+                            PK: addressNumber,
+                            SK: geohash
+                        }))
+                    }
+                }
+            })
+        );
+        const data = (Responses?.[TABLE_NAME] ?? []) as Address[];
+        addresses.push(...data);
     }
 
-    const data = await query.select(["OID_", "Add_Number", "StreetName", "StN_PosTyp", "StN_PosDir", "Longitude", "Latitude"]);
-
-    res.status(200).json({ data });
+    res.status(200).json({ data: addresses });
 }

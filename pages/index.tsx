@@ -11,9 +11,9 @@ import { calculateRegression } from "../services/RegressionService";
 import { useGoogleMap } from "../components/GoogleMapPackage/useGoogleMap";
 
 const Home: NextPage = () => {
-    const { bounds } = useGoogleMap();
+    const { bounds, zoom } = useGoogleMap();
     const [addresses, setAddresses] = useState<Address[]>();
-    const [Add_Number, setAdd_Number] = useState<string>("");
+    const [address, setAddress] = useState<string>("");
     const [polylinePath, setPolylinePath] = useState<google.maps.LatLngLiteral[]>();
     const [loading, setLoading] = useState<boolean>(false);
 
@@ -23,8 +23,8 @@ const Home: NextPage = () => {
             return;
         }
         const [a, b] = calculateRegression(
-            addresses.map((a) => a.Latitude),
-            addresses.map((a) => a.Longitude)
+            addresses.map((a) => a.lat),
+            addresses.map((a) => a.lng)
         );
 
         function getYValue(x: number) {
@@ -41,11 +41,11 @@ const Home: NextPage = () => {
                 maxLatitude = -Infinity;
 
             for (const a of addresses) {
-                if (a.Latitude < minLatitude) {
-                    minLatitude = a.Latitude;
+                if (a.lat < minLatitude) {
+                    minLatitude = a.lat;
                 }
-                if (a.Latitude > maxLatitude) {
-                    maxLatitude = a.Latitude;
+                if (a.lat > maxLatitude) {
+                    maxLatitude = a.lat;
                 }
             }
 
@@ -59,11 +59,11 @@ const Home: NextPage = () => {
                 maxLongitude = -Infinity;
 
             for (const a of addresses) {
-                if (a.Longitude < minLongitude) {
-                    minLongitude = a.Longitude;
+                if (a.lng < minLongitude) {
+                    minLongitude = a.lng;
                 }
-                if (a.Longitude > maxLongitude) {
-                    maxLongitude = a.Longitude;
+                if (a.lng > maxLongitude) {
+                    maxLongitude = a.lng;
                 }
             }
 
@@ -76,11 +76,17 @@ const Home: NextPage = () => {
 
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
-        setLoading(true);
-        const params: SearchParameters = { Add_Number };
-        if (bounds) {
-            params.Bounds = bounds.toUrlValue();
+        if (!bounds) {
+            return;
         }
+
+        if (zoom < 14) {
+            alert(`Move closer to search please. You are at ${zoom} and the min is 14`);
+            return;
+        }
+
+        setLoading(true);
+        const params: SearchParameters = { address, bounds: bounds.toUrlValue() };
         const res = await fetch("/api/search?" + new URLSearchParams(params));
         const json: APIResponse<Address[]> = await res.json();
         setLoading(false);
@@ -99,8 +105,8 @@ const Home: NextPage = () => {
                         pattern="^\d+$"
                         placeholder="Enter House Number"
                         title="House number must consist of only digits"
-                        value={Add_Number}
-                        onChange={(e) => setAdd_Number(e.target.value)}
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
                         required
                     />
                     <button type="submit" disabled={loading}>
@@ -110,19 +116,22 @@ const Home: NextPage = () => {
             </form>
 
             <GoogleMap apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY as string} style={{ flexGrow: "1", height: "60vh" }}>
-                {addresses?.map((a) => (
-                    <Marker
-                        key={a.OID_}
-                        position={{ lat: a.Latitude, lng: a.Longitude }}
-                        title={`${a.Add_Number} ${a.StreetName} ${a.StN_PosTyp} (${new google.maps.LatLng({
-                            lat: a.Latitude,
-                            lng: a.Longitude
-                        }).toUrlValue()})`}
-                        onClick={() => {
-                            setAddresses(addresses.filter((thisA) => thisA.OID_ !== a.OID_));
-                        }}
-                    />
-                ))}
+                {addresses?.map((a) => {
+                    const key = [a.PK, a.SK].join();
+                    return (
+                        <Marker
+                            key={key}
+                            position={{ lat: a.lat, lng: a.lng }}
+                            title={`${a.address} ${a.street} ${a.type} (${new google.maps.LatLng({
+                                lat: a.lat,
+                                lng: a.lng
+                            }).toUrlValue()})`}
+                            onClick={() => {
+                                setAddresses(addresses.filter((thisA) => [thisA.PK, thisA.SK].join() !== key));
+                            }}
+                        />
+                    );
+                })}
                 {!!polylinePath && <Polyline path={polylinePath} strokeColor="purple" strokeWeight={5} />}
             </GoogleMap>
 

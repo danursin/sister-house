@@ -61,7 +61,7 @@ const Map: React.FC<MapProps> = ({ style, children }) => {
             {React.Children.map(children, (child) => {
                 if (React.isValidElement(child)) {
                     // set the map prop on the child component
-                    return React.cloneElement(child, { map });
+                    return React.cloneElement(child, { map } as google.maps.MarkerOptions | google.maps.PolylineOptions);
                 }
             })}
         </>
