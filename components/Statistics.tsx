@@ -7,8 +7,8 @@ interface StatisticsProps {
 }
 
 const Statistics: React.FC<StatisticsProps> = ({ addresses }) => {
-    const x = addresses.map((a) => a.Latitude);
-    const y = addresses.map((a) => a.Longitude);
+    const x = addresses.map((a) => a.lat);
+    const y = addresses.map((a) => a.lng);
     const [a, b] = calculateRegression(x, y);
 
     return (
