@@ -11,7 +11,7 @@ import { calculateRegression } from "../services/RegressionService";
 import { useGoogleMap } from "../components/GoogleMapPackage/useGoogleMap";
 
 const Home: NextPage = () => {
-    const { bounds, zoom } = useGoogleMap();
+    const { bounds } = useGoogleMap();
     const [addresses, setAddresses] = useState<Address[]>();
     const [address, setAddress] = useState<string>("");
     const [polylinePath, setPolylinePath] = useState<google.maps.LatLngLiteral[]>();
@@ -77,11 +77,6 @@ const Home: NextPage = () => {
     const onSubmit = async (e: SyntheticEvent) => {
         e.preventDefault();
         if (!bounds) {
-            return;
-        }
-
-        if (zoom < 14) {
-            alert(`Move closer to search please. You are at ${zoom} and the min is 14`);
             return;
         }
 
